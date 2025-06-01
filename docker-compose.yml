@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  digitaleye:
+    build: 
+      context: .
+    
+    runtime: nvidia
+
+    ports:
+      - "8888:8888"
+
+    hostname: digitaleye-mammography
+
+    tty: true
+    stdin_open: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+            
