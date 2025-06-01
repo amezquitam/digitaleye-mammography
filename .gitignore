@@ -132,3 +132,5 @@ mmcv*
 pim/filtered
 pim/preprocessed
 models
+data
+work_dirs

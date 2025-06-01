@@ -3,7 +3,9 @@ import sys
 import wget
 from inspect import getsourcefile
 from os.path import abspath
-sys.path.append(os.path.dirname(os.path.realpath(sys.argv[0])) + '/utils')
+
+append_path = os.path.dirname(os.path.realpath(sys.argv[0])) + '/util'
+sys.path.append(append_path)
 
 import cv2
 import glob
@@ -14,7 +16,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from tqdm import tqdm
 import numpy as np
-import mammoggraphy_preprocess as mam_pre
+import utils.mammoggraphy_preprocess as mam_pre
 import warnings
 
 from PIL import Image
@@ -29,7 +31,7 @@ from mmdet.core.evaluation.bbox_overlaps import bbox_overlaps
 from mmdet.core.evaluation.class_names import get_classes
 from mmdet.core.evaluation.mean_ap import *
 from sklearn.metrics import auc
-from seg_utils import *
+from utils.seg_utils import *
 
 warnings.filterwarnings("ignore")
 
@@ -209,7 +211,7 @@ def breast_segmentation(seg_model, image, device):
     return crop_img, crop_coordinate
 
 
-def apply_segmentation(seg_img_path, img_path, device):
+def apply_segmentation(seg_img_path, img_path, device, out_dir):
     """
     Extracts breast region from given Image with segmentation model.
     
@@ -234,11 +236,12 @@ def apply_segmentation(seg_img_path, img_path, device):
     
     img_list = sorted(glob.glob(os.path.join(img_path, '*')))
     path = os.path.join(os.path.sep, os.path.abspath("."),'models','ResUNet_breast.pth')
+    print(path)
     segmodel_name = os.path.basename(path)
     if not os.path.exists(path):
         print(segmodel_name.split('.pth')[0]+' segmentation model is being downloaded. Wait.')
         url = 'https://github.com/cbddobvyz/digitaleye-mammography/releases/download/shared-models.v1/'+segmodel_name
-        wget.download(url, out='models/')
+        wget.download(url, out=out_dir)
         print(segmodel_name.split('.pth')[0]+' model downloaded. It is estimated.')
     seg_model = torch.load(path, map_location=torch.device(device))
     print('Applying segmentation to images')
